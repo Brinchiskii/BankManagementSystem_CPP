@@ -9,22 +9,37 @@
 
 class EmployeeAccount {
 public:
-    static const int MAX_LENGTH = 30;
-    EmployeeAccount(int = 0, std::string = "", std::string = "");
+    static const int maxNameLength = 30;
+    EmployeeAccount(int empl_id = 0, int usr_id = 0, std::string eml = "", std::string fname = "", std::string lname = "");
     ~EmployeeAccount();
 
-    void setEmployeeId(int);
-    void setFirstName(std::string);
-    void setLastName(std::string);
-
     int getEmployeeId() const;
+    int getUserId() const;
+    std::string getEmail() const;
     std::string getFirstName() const;
     std::string getLastName() const;
 
+    void settUserId(int);
+    void setEmail(std::string);
+    void setFirstName(std::string);
+    void setLastName(std::string);
+
 private:
     int employeeId{};
-    char firstname[MAX_LENGTH]{};
-    char lastname[MAX_LENGTH]{};
+    int user_id{};
+    std::string email;
+    std::string firstname;
+    std::string lastname;
+
+    // Function to check if string contains only alphabetic characters.
+    bool isAlpha(const std::string& str) {
+        for (char c : str) {
+            if (!std::isalpha(c)) {
+                return false;
+            }
+        }
+        return true;
+    }
 };
 
 

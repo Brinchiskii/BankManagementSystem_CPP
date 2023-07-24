@@ -9,7 +9,7 @@
 
 class CustomerAccount {
 public:
-    static const int MAX_SIZE = 30;
+    static const int maxNameLength = 50;
     static const int MAX_AGE_SIZE = 99;
 
     // Constructor with default arguments
@@ -27,7 +27,6 @@ public:
     std::string getFirstName() const;
     std::string getLastName() const;
 
-    void setCustomerId(int);
     void setUserId(int);
     void setAccountNumber(std::string);
     void setBalanceCents(int);
@@ -45,6 +44,16 @@ private:
     int age{MAX_AGE_SIZE};
     std::string firstname;
     std::string lastname;
+
+    // Function to check if string contains only alphabetic characters.
+    bool isAlpha(const std::string& str) {
+        for (char c : str) {
+            if (!std::isalpha(c)) {
+                return false;
+            }
+        }
+        return true;
+    }
 };
 
 #endif //BANKMANAGEMENTSYSTEM_CUSTOMERACCOUNT_H
