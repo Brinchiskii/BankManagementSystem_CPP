@@ -137,7 +137,7 @@ void CustomerOperations::showAccountDetails(int customerId) {
     }
 
     if(customerAccount != nullptr) {
-        std::cout << "Customer ID: " << customerAccount->getCustomerId() << std::endl;
+        std::cout << "Customer ID: " << customerId << std::endl;
         std::cout << "User ID: " << customerAccount->getUserId() << std::endl;
         std::cout << "Account Number: " << customerAccount->getAccountNumber() << std::endl;
         std::cout << "Balance: $" << customerAccount->getBalanceInDollars() << std::endl;

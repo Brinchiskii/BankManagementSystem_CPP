@@ -4,6 +4,7 @@
 // Inclusion of header files
 #include "Employee_Files/EmployeeAccount.h"
 #include "Customer_Files/CustomerOperations.h"
+#include "Employee_Files/EmployeeOperations.h"
 
 int main() {
 
@@ -20,7 +21,12 @@ int main() {
     */
 
     //customer->deposit(customer_id, amount);
-    customer->showAccountDetails(customer_id);
+    //customer->showAccountDetails(customer_id);
+
+    std::unique_ptr<EmployeeOperations> employee = std::make_unique<EmployeeOperations>("localhost", "root", "Sebastian2001Brinch6443", "bank_management_system_db");
+
+    employee->printAllCustomerAccounts();
+
     return 0;
 }
 
