@@ -90,6 +90,3 @@ void EmployeeAccount::setLastName(std::string lname) {
 
     lastname = lname;
 }
-
-// destructor for EmployeeAccount()
-EmployeeAccount::~EmployeeAccount() = default;

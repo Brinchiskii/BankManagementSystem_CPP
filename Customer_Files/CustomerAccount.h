@@ -16,7 +16,7 @@ public:
     CustomerAccount(int cust_id = 0, int usr_id = 0, std::string acc_num = "", int bal_cents = 0,
                     std::string eml = "", int age_val = MAX_AGE_SIZE, std::string fname = "", std::string lname = "");
 
-    ~CustomerAccount();
+    //~CustomerAccount();
 
     int getCustomerId() const;
     int getUserId() const;
@@ -26,7 +26,9 @@ public:
     int getAge() const;
     std::string getFirstName() const;
     std::string getLastName() const;
+    double getBalanceInDollars() const;
 
+    void setCustomerId(int);
     void setUserId(int);
     void setAccountNumber(std::string);
     void setBalanceCents(int);

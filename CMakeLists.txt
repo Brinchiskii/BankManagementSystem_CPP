@@ -3,6 +3,8 @@ project(BankManagementSystem)
 
 set(CMAKE_CXX_STANDARD 20)
 
+set(CMAKE_BUILD_TYPE Debug)
+
 # Set the path to the MySQL Connector/C++ directory
 set(FULL_PATH_TO_MYSQL_CONNECTOR_CPP_DIR "/usr/local/mysql-8.0.33-macos13-arm64")
 
@@ -18,7 +20,7 @@ include_directories(${MYSQL_INCLUDE_DIR})
 # Add the MySQL Connector/C++ libraries directory to the link path
 link_directories(${MYSQL_LIB_DIR})
 
-add_executable(BankManagementSystem main.cpp Employee_Files/EmployeeAccount.cpp Employee_Files/EmployeeAccount.h Customer_Files/CustomerAccount.cpp Customer_Files/CustomerAccount.h)
+add_executable(BankManagementSystem main.cpp Employee_Files/EmployeeAccount.cpp Employee_Files/EmployeeAccount.h Customer_Files/CustomerAccount.cpp Customer_Files/CustomerAccount.h Customer_Files/CustomerOperations.cpp Customer_Files/CustomerOperations.h)
 
 # Link the necessary libraries
 target_link_libraries(BankManagementSystem libmysqlclient.dylib)

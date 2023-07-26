@@ -16,6 +16,14 @@ int CustomerAccount::getCustomerId() const {
     return customer_id;
 }
 
+void CustomerAccount::setCustomerId(int cust_id) {
+    if (cust_id >= 0) {
+        customer_id = cust_id;
+    } else {
+        throw std::invalid_argument("Invalid customer ID. Must be a positive number.");
+    }
+}
+
 // Getter and setter for user ID
 int CustomerAccount::getUserId() const {
     return user_id;
@@ -35,7 +43,7 @@ std::string CustomerAccount::getAccountNumber() const {
 }
 
 void CustomerAccount::setAccountNumber(std::string acc_num) {
-    if (acc_num.length() != 20) {
+    if (acc_num.length() != 10) {
         throw std::invalid_argument("Invalid account number. Must be 20 characters.");
     } else {
         account_number = acc_num;
@@ -127,5 +135,15 @@ void CustomerAccount::setLastName(std::string lname) {
     lastname = lname;
 }
 
+// Getter for function to convert from cents to dollars
+
+double CustomerAccount::getBalanceInDollars() const {
+    return static_cast<double>(balance_cents) / 100.0;
+}
+
+/*
 // Destructor for customer account
-CustomerAccount::~CustomerAccount() = default;
+CustomerAccount::~CustomerAccount() {
+
+}
+*/
