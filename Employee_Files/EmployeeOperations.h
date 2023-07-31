@@ -15,7 +15,8 @@ public:
     //~EmployeeOperations();
 
     void printAllCustomerAccounts();
-    void createNewCustomer();
+    void createNewCustomer(std::string account_number, int balance, std::string email, int age, std::string firstname, std::string lastname);
+    void createNewCustomerUser(std::string username, std::string password);
     void deleteCustomer();
 
 private:
