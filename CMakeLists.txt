@@ -20,7 +20,7 @@ include_directories(${MYSQL_INCLUDE_DIR})
 # Add the MySQL Connector/C++ libraries directory to the link path
 link_directories(${MYSQL_LIB_DIR})
 
-add_executable(BankManagementSystem main.cpp Employee_Files/EmployeeAccount.cpp Employee_Files/EmployeeAccount.h Customer_Files/CustomerAccount.cpp Customer_Files/CustomerAccount.h Customer_Files/CustomerOperations.cpp Customer_Files/CustomerOperations.h Employee_Files/EmployeeOperations.cpp Employee_Files/EmployeeOperations.h)
+add_executable(BankManagementSystem main.cpp Employee_Files/EmployeeAccount.cpp Employee_Files/EmployeeAccount.h Customer_Files/CustomerAccount.cpp Customer_Files/CustomerAccount.h Customer_Files/CustomerOperations.cpp Customer_Files/CustomerOperations.h Employee_Files/EmployeeOperations.cpp Employee_Files/EmployeeOperations.h LoginManager.cpp LoginManager.h DatabaseConnectionManager.cpp DatabaseConnectionManager.h Logging/Logger.cpp Logging/Logger.h Logging/Logs/logfile.txt)
 
 # Link the necessary libraries
 target_link_libraries(BankManagementSystem libmysqlclient.dylib)

@@ -4,46 +4,34 @@
 
 #include <iomanip>
 #include <algorithm>
+#include <random>
+#include <iterator>
+#include <cctype>
 
 
 #include "EmployeeOperations.h"
 #include "EmployeeAccount.h"
+#include "../Logging/Logger.h"
 
-EmployeeOperations::EmployeeOperations(const std::string &host, const std::string &user, const std::string &password,
-                                       const std::string &database): db_conn(mysql_init(nullptr), &mysql_close) {
+Logger logger_employee("/Users/sebastianbrinch/CLionProjects/BankManagementSystem/Logging/Logs/logfile_employees.txt");
 
-    if(!db_conn) {
-        std::cout << "MySQL initialization failed!" << std::endl;
-        throw std::runtime_error("Runtime: MySQL Initialization failed!");
-    }
-
-    MYSQL* mysql_conn = mysql_real_connect(db_conn.get(), host.c_str(), user.c_str(), password.c_str(), database.c_str(), 3306, NULL, 0);
-
-    if (mysql_conn) {
-        // Connection successful, reset the unique pointer with the valid connection.
-        //db_conn.reset(mysql_conn);
-        std::cout << "You are now logged in as: " << user << '\n';
-    } else {
-        // Connection failed, handle the error.
-        std::cout << "Connection Error: " << mysql_error(db_conn.get()) << std::endl;
-        throw std::runtime_error("Connection Error!");
-        // Or use std::cerr to print the error message to the standard error stream.
-        // std::cerr << "Connection Error: " << mysql_error(db_conn.get()) << std::endl;
-    }
-}
+EmployeeOperations::EmployeeOperations(DatabaseConnectionManager &dbManager) : dbManager(dbManager) { }
 
 void EmployeeOperations::printAllCustomerAccounts() {
+    MYSQL* dbConnection = dbManager.getConnection();
+
     MYSQL_RES* rset;
     MYSQL_ROW rows;
 
     std::string sql = "SELECT * FROM Customers";
 
-    if (mysql_query(db_conn.get(), sql.c_str())) {
-        std::cout << "Error printing all accounts!";
+    if (mysql_query(dbConnection, sql.c_str())) {
+        logger_employee.log(LogLevel::ERROR, "Failed to print all accounts" + std::string(mysql_error(dbConnection)));
+        std::cout << "Error: Contact Bank!";
         return;
     }
 
-    rset = mysql_use_result(db_conn.get());
+    rset = mysql_use_result(dbConnection);
 
     std::cout << std::left << std::setw(13) << std::setfill('-') << std::left << '+'
     << std::setw(9) << std::setfill('-') << std::left << '+'
@@ -97,27 +85,46 @@ void EmployeeOperations::printAllCustomerAccounts() {
 }
 
 void EmployeeOperations::createNewCustomerUser(std::string username, std::string password) {
+    MYSQL* dbConnection = dbManager.getConnection();
+
     std::string sql = "INSERT INTO Users(username, password, role) VALUES('" + username + "', '" + password + "', 'Customer')";
 
-    if(!mysql_query(db_conn.get(), sql.c_str())) {
+    if(!mysql_query(dbConnection, sql.c_str())) {
+        logger_employee.log(LogLevel::INFO, "Created new customer user:" + std::string(username));
         std::cout << "Created new customer user: " << username << std::endl;
     } else {
-        std::cout << "Failed to create new customer: " << username << std::endl;
-        const char* error_message = mysql_error(db_conn.get());
-        std::cout << "MySQL Error Message: " << error_message << std::endl;
+        logger_employee.log(LogLevel::ERROR, "Failed to create new customer: " + std::string(mysql_error(dbConnection)));
+        std::cout << "Error: Contact administration!" << std::endl;
     }
 }
 
-void EmployeeOperations::createNewCustomer(std::string account_number, int balance, std::string email, int age, std::string firstname, std::string lastname) {
-
+void EmployeeOperations::createNewCustomer(std::string account_number, std::string email, int age, std::string firstname, std::string lastname, std::string password) {
+    MYSQL* dbConnection = dbManager.getConnection();
     MYSQL_RES *rset;
     MYSQL_ROW row;
     int usr_id{};
 
+    // Get the username:
+    char letters[] = { 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i',
+                       'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r',
+                       's', 't', 'u', 'v', 'w', 'x', 'y', 'z' };
+    int last_c{};
+    std::random_device r;
+    std::seed_seq seed{r(), r(), r(), r(), r(), r(), r(), r()};
+    std::shuffle(std::begin(letters), std::end(letters), std::mt19937(seed));
+
+    char randomLetter = std::toupper(letters[0]);
+
+    //std::string username{static_cast<char>(firstname[0] + lastname[0] + letters[0])};
+    std::string username{firstname.substr(0, 1) + lastname.substr(0, 1) + randomLetter};
+
+    // Creating the new customer user account
+    createNewCustomerUser(username, password);
+
     // Getting the newest user in the users table which needs to be associated with the customer table
     std::string queryUsersTable = "SELECT * FROM Users ORDER BY user_id DESC LIMIT 1";
-    if(!mysql_query(db_conn.get(), queryUsersTable.c_str())) {
-        rset = mysql_use_result(db_conn.get());
+    if(!mysql_query(dbConnection, queryUsersTable.c_str())) {
+        rset = mysql_use_result(dbConnection);
         if(rset) {
             row = mysql_fetch_row(rset);
             if(row) {
@@ -128,14 +135,28 @@ void EmployeeOperations::createNewCustomer(std::string account_number, int balan
     }
 
     std::string sql = "INSERT INTO Customers (user_id, account_number, balance, email, age, firstname, lastname) VALUES(" + std::to_string(usr_id) + ",'" + account_number
-            + "'," + std::to_string(balance) + ",'" + email + "'," + std::to_string(age) + ",'" + firstname + "','" + lastname + "')";
+            + "'," + std::to_string(0) + ",'" + email + "'," + std::to_string(age) + ",'" + firstname + "','" + lastname + "')";
 
-    if(!mysql_query(db_conn.get(), sql.c_str())) {
+    if(!mysql_query(dbConnection, sql.c_str())) {
+        logger_employee.log(LogLevel::INFO, "Created new customer: " + std::string(firstname) + " " + std::string(lastname));
         std::cout << "Created new customer: " << firstname << " " << lastname << std::endl;
     } else {
-        std::cout << "Failed to create new customer: " << firstname << " " << lastname << std::endl;
-        const char* error_message = mysql_error(db_conn.get());
-        std::cout << "MySQL Error Message: " << error_message << std::endl;
+        logger_employee.log(LogLevel::ERROR, "Failed to create new customer: " + std::string(mysql_error(dbConnection)));
+        std::cout << "Error: Contact administration!" << std::endl;
     }
 }
 
+void EmployeeOperations::deleteCustomer(int account_number) {
+    MYSQL* dbConnection = dbManager.getConnection();
+
+    std::string sql = "DELETE FROM Customers WHERE customer_id='" + std::to_string(account_number) + "'";
+
+    if(!mysql_query(dbConnection, sql.c_str())) {
+        logger_employee.log(LogLevel::INFO, "Deleted customer account: " + std::to_string(account_number));
+        std::cout << "Deleted customer account: " << account_number << std::endl;
+    } else {
+        logger_employee.log(LogLevel::ERROR, "Failed to delete customer: " + std::to_string(account_number) + std::string(
+                mysql_error(dbConnection)));
+        std::cout << "Error: Contact administration!" << std::endl;
+    }
+}

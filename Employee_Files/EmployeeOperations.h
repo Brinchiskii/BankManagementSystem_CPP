@@ -8,19 +8,26 @@
 #include <iostream>
 #include <mysql.h>
 
+#include "../DatabaseConnectionManager.h"
+
+
 class EmployeeOperations {
 
 public:
-    EmployeeOperations(const std::string& host = "localhost", const std::string& user = "", const std::string& password = "", const std::string& database = "");
-    //~EmployeeOperations();
+    EmployeeOperations(DatabaseConnectionManager& dbManager);
 
     void printAllCustomerAccounts();
-    void createNewCustomer(std::string account_number, int balance, std::string email, int age, std::string firstname, std::string lastname);
+    void createNewCustomer(std::string account_number, std::string email, int age, std::string firstname, std::string lastname, std::string password);
     void createNewCustomerUser(std::string username, std::string password);
-    void deleteCustomer();
+    void deleteCustomer(int account_number);
+
+    // ONLY FOR ADMINISTRATION
+    void createNewEmployeeUser();
+    void createNewEmployee();
+    void deleteEmployee();
 
 private:
-    std::unique_ptr<MYSQL, decltype(&mysql_close)>db_conn;
+    DatabaseConnectionManager& dbManager;
 };
 
 #endif //BANKMANAGEMENTSYSTEM_EMPLOYEEOPERATIONS_H

@@ -9,13 +9,14 @@
 #include <string>
 #include <memory>
 
+#include "../DatabaseConnectionManager.h"
+
 class CustomerAccount;
 
 class CustomerOperations {
 
 public:
-    explicit CustomerOperations(const std::string& host = "localhost", const std::string& user = "", const std::string& password = "", const std::string& database = "");
-    ~CustomerOperations();
+    CustomerOperations(DatabaseConnectionManager& dbManager);
 
     void deposit(int accountNumber, double amount);
     void withdraw(int accountNumber, double amount);
@@ -23,8 +24,7 @@ public:
     void showAccountDetails(int customerId);
 
 private:
-    // Smart pointer for MsySQL connection
-    std::unique_ptr<MYSQL, decltype(&mysql_close)> db_conn;
+    DatabaseConnectionManager& dbManager;
 };
 
 #endif //BANKMANAGEMENTSYSTEM_CUSTOMEROPERATIONS_H
